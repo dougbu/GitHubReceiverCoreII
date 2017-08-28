@@ -19,10 +19,10 @@ namespace GitHubReceiverCoreII.Controllers
         // ??? [FromRoute] not required but makes parameters consistent and explicit.
         [GitHubWebHookAction]
         public IActionResult Handler(
-            [FromHeader(Name = "X-Github-Event")] string action,
-            [FromBody] JObject data,
             [FromRoute(Name = "webHookReceiver")] string receiver,
-            [FromRoute(Name = "id")] string receiverId = "")
+            [FromRoute(Name = "id")] string receiverId,
+            [FromHeader(Name = "X-Github-Event")] string action,
+            [FromBody] JObject data)
         {
             if (!ModelState.IsValid)
             {
