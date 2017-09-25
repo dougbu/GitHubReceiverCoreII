@@ -9,7 +9,12 @@ namespace GitHubReceiverCore
         public void ConfigureServices(IServiceCollection services)
         {
             var builder = services.AddMvcCore();
-            builder.AddGitHubWebHooks();
+            builder
+                .AddAzureAlertWebHooks()
+                .AddBitbucketWebHooks()
+                .AddDropboxWebHooks()
+                .AddGitHubWebHooks()
+                .AddKuduWebHooks();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

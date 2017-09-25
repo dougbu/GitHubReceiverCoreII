@@ -15,52 +15,108 @@ namespace GitHubReceiverCoreII.Controllers
             _logger = loggerFactory.CreateLogger<GitHubWebHookController>();
         }
 
-        // ??? Should we provide an abstract base GitHub controller containing this method?
-        // ??? [FromRoute] not required but makes parameters consistent and explicit.
-        [GitHubWebHookAction]
-        public IActionResult Handler(
-            [FromRoute(Name = "webHookReceiver")] string receiver,
-            [FromRoute(Name = "id")] string receiverId,
-            [FromHeader(Name = "X-Github-Event")] string action,
-            [FromBody] JObject data)
+        [AzureAlertWebHook]
+        public IActionResult AzureAlert(string receiverName, string id, AzureAlertNotification data)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _logger.LogInformation(0, "Receiver {ReceiverName} '{ReceiverId}' received something.", receiver, receiverId);
+            _logger.LogInformation(0, "Receiver {ReceiverName} '{ReceiverId}' received something.", receiverName, id);
+            _logger.LogInformation(
+                1,
+                "Alert {AlertName} / {AlertId} reached status {AlertStatus} at {AlertTime}.",
+                data.Context.Name,
+                data.Context.Id,
+                data.Status,
+                data.Context.Timestamp);
 
-            if (action.Equals("push", StringComparison.OrdinalIgnoreCase))
+            return Ok();
+        }
+
+        [BitbucketWebHook]
+        public IActionResult Bitbucket(string receiverName, string id, string @event, JObject data)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok();
+        }
+
+        [DropboxWebHook]
+        public IActionResult Dropbox(string receiverName, string id, string @event, JObject data)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            return Ok();
+        }
+
+        [GitHubWebHook]
+        public IActionResult GitHub(string receiver, string receiverId, string @event, JObject data)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _logger.LogInformation(2, "Receiver {ReceiverName} '{ReceiverId}' received something.", receiver, receiverId);
+
+            if (@event.Equals("push", StringComparison.OrdinalIgnoreCase))
             {
                 var branch = data["ref"].ToString();
-                _logger.LogInformation(1, $"Received notification of push to '{branch}'.");
+                _logger.LogInformation(3, "Received notification of push to '{Branch}'.", branch);
 
                 foreach (var commit in data["commits"])
                 {
                     var id = commit["id"].ToString();
                     var message = commit["message"].ToString();
-                    _logger.LogInformation(2, $"\t{id}: {message}");
+                    _logger.LogInformation(4, "\t{Id}: {Message}.", id, message);
 
                     foreach (var added in commit["added"])
                     {
                         var name = added.ToString();
-                        _logger.LogInformation(3, $"Added '{name}'");
+                        _logger.LogInformation(5, "Added '{FileName}'.", name);
                     }
 
                     foreach (var modified in commit["modified"])
                     {
                         var name = modified.ToString();
-                        _logger.LogInformation(4, $"Modified '{name}'");
+                        _logger.LogInformation(6, "Modified '{FileName}'.", name);
                     }
 
                     foreach (var removed in commit["removed"])
                     {
                         var name = removed.ToString();
-                        _logger.LogInformation(5, $"Removed '{name}'");
+                        _logger.LogInformation(7, "Removed '{FileName}'.", name);
                     }
                 }
             }
+
+            return Ok();
+        }
+
+        [KuduWebHook]
+        public IActionResult Kudu(string receiverName, string id, KuduNotification data)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _logger.LogInformation(8, "Receiver {ReceiverName} '{ReceiverId}' received something.", receiverName, id);
+            _logger.LogInformation(
+                9,
+                "Kudu deployment {KuduId} for site {SiteName} reached status {Status} ({StatusText}).",
+                data.Id,
+                data.SiteName,
+                data.Status,
+                data.StatusText);
 
             return Ok();
         }

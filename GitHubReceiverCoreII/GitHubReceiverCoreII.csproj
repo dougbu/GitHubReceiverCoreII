@@ -10,7 +10,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebHooks.Receivers.AzureAlert" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebHooks.Receivers.BitBucket" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebHooks.Receivers.Dropbox" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebHooks.Receivers.GitHub" Version="1.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebHooks.Receivers.Kudu" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
