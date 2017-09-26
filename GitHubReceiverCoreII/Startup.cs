@@ -13,6 +13,7 @@ namespace GitHubReceiverCore
                 .AddAzureAlertWebHooks()
                 .AddBitbucketWebHooks()
                 .AddDropboxWebHooks()
+                .AddDynamicsCRMWebHooks()
                 .AddGitHubWebHooks()
                 .AddKuduWebHooks();
         }

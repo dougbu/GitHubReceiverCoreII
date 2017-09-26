@@ -57,6 +57,26 @@ namespace GitHubReceiverCoreII.Controllers
             return Ok();
         }
 
+        [DynamicsCRMWebHook]
+        public IActionResult DynamicsCRM(string receiverName, string id, JObject data)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var messageName = data.Value<string>(DynamicsCRMConstants.EventRequestPropertyName);
+            _logger.LogInformation(
+                2,
+                "Receiver {ReceiverName} / {ReceiverId} received message {MessageName} with {PropertyCount} properties.",
+                receiverName,
+                id,
+                messageName,
+                data.Count);
+
+            return Ok();
+        }
+
         [GitHubWebHook]
         public IActionResult GitHub(string receiver, string receiverId, string @event, JObject data)
         {
@@ -65,35 +85,35 @@ namespace GitHubReceiverCoreII.Controllers
                 return BadRequest(ModelState);
             }
 
-            _logger.LogInformation(2, "Receiver {ReceiverName} '{ReceiverId}' received something.", receiver, receiverId);
+            _logger.LogInformation(3, "Receiver {ReceiverName} '{ReceiverId}' received something.", receiver, receiverId);
 
             if (@event.Equals("push", StringComparison.OrdinalIgnoreCase))
             {
                 var branch = data["ref"].ToString();
-                _logger.LogInformation(3, "Received notification of push to '{Branch}'.", branch);
+                _logger.LogInformation(4, "Received notification of push to '{Branch}'.", branch);
 
                 foreach (var commit in data["commits"])
                 {
                     var id = commit["id"].ToString();
                     var message = commit["message"].ToString();
-                    _logger.LogInformation(4, "\t{Id}: {Message}.", id, message);
+                    _logger.LogInformation(5, "\t{Id}: {Message}.", id, message);
 
                     foreach (var added in commit["added"])
                     {
                         var name = added.ToString();
-                        _logger.LogInformation(5, "Added '{FileName}'.", name);
+                        _logger.LogInformation(6, "Added '{FileName}'.", name);
                     }
 
                     foreach (var modified in commit["modified"])
                     {
                         var name = modified.ToString();
-                        _logger.LogInformation(6, "Modified '{FileName}'.", name);
+                        _logger.LogInformation(7, "Modified '{FileName}'.", name);
                     }
 
                     foreach (var removed in commit["removed"])
                     {
                         var name = removed.ToString();
-                        _logger.LogInformation(7, "Removed '{FileName}'.", name);
+                        _logger.LogInformation(8, "Removed '{FileName}'.", name);
                     }
                 }
             }
@@ -109,9 +129,9 @@ namespace GitHubReceiverCoreII.Controllers
                 return BadRequest(ModelState);
             }
 
-            _logger.LogInformation(8, "Receiver {ReceiverName} '{ReceiverId}' received something.", receiverName, id);
+            _logger.LogInformation(9, "Receiver {ReceiverName} '{ReceiverId}' received something.", receiverName, id);
             _logger.LogInformation(
-                9,
+                10,
                 "Kudu deployment {KuduId} for site {SiteName} reached status {Status} ({StatusText}).",
                 data.Id,
                 data.SiteName,
