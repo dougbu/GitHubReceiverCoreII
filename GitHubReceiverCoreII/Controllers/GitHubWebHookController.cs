@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebHooks;
 using Microsoft.Extensions.Logging;
@@ -137,6 +138,27 @@ namespace GitHubReceiverCoreII.Controllers
                 data.SiteName,
                 data.Status,
                 data.StatusText);
+
+            return Ok();
+        }
+
+        [MailChimpWebHook]
+        public IActionResult MailChimp(string receiverName, string id, IFormCollection data)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Get the event name.
+            var eventNames = data[MailChimpConstants.EventRequestPropertyName];
+            _logger.LogInformation(
+                11,
+                "Receiver {ReceiverName} / {ReceiverId} received message {EventNames} with {PropertyCount} properties.",
+                receiverName,
+                id,
+                eventNames.ToString(),
+                data.Count);
 
             return Ok();
         }
