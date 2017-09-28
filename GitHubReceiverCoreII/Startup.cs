@@ -16,7 +16,8 @@ namespace GitHubReceiverCore
                 .AddDynamicsCRMWebHooks()
                 .AddGitHubWebHooks()
                 .AddKuduWebHooks()
-                .AddMailChimpWebHooks();
+                .AddMailChimpWebHooks()
+                .AddPusherWebHooks();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
