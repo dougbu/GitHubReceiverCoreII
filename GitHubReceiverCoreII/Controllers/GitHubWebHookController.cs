@@ -27,17 +27,18 @@ namespace GitHubReceiverCoreII.Controllers
             _logger.LogInformation(0, "Receiver {ReceiverName} '{ReceiverId}' received something.", receiverName, id);
             _logger.LogInformation(
                 1,
-                "Alert {AlertName} / {AlertId} reached status {AlertStatus} at {AlertTime}.",
+                "Alert {AlertName} / {AlertId} reached status {AlertStatus} of {MetricName} at {AlertTime}.",
                 data.Context.Name,
                 data.Context.Id,
                 data.Status,
+                data.Context.Condition.MetricName,
                 data.Context.Timestamp);
 
             return Ok();
         }
 
         [BitbucketWebHook]
-        public IActionResult Bitbucket(string receiverName, string id, string @event, JObject data)
+        public IActionResult Bitbucket(string receiverName, string id, string webHookId, string @event, JObject data)
         {
             if (!ModelState.IsValid)
             {
